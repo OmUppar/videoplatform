@@ -1,10 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { dataSource } from 'src/main';
+// import { dataSource } from 'src/main';
+// import { dataSource } from '../main';  // adjust path accordingly
 import { User } from './entities/user.entity';
+import { DataSource } from 'typeorm';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
 export class UserService {
+  constructor(private readonly dataSource: DataSource) {}  // 👈 Injected FOr Jest Testing
   findOne(id: number) {
     return `This action returns a #${id} user`;
   }
@@ -17,8 +21,9 @@ export class UserService {
     return `This action removes a #${id} user`;
   }
 
-  async create(email: string, password: string, plan: string) {
-    const queryRunner = dataSource.createQueryRunner();
+  async create(userDto: any) {
+    const { email, password, plan } = userDto;
+    const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
@@ -90,7 +95,7 @@ export class UserService {
 
   async findAll() {
     try {
-      const result = await dataSource.manager
+      const result = await this.dataSource.manager
         .createQueryBuilder(User, 'u')
         // .leftJoinAndMapOne(
         //   'u.user_created',
