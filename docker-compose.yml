@@ -6,7 +6,7 @@ services:
     depends_on:
       - postgres
     environment:
-      DB_HOST: postgres
+      DB_HOST: postgres   # service name, not localhost
       DB_PORT: 5432
       DB_USER: postgres
       DB_PW: postgres

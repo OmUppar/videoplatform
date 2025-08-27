@@ -16,6 +16,7 @@ async function bootstrap(): Promise<void> {
   let app: NestExpressApplication;
   try {
     dotenv.config();
+    console.log('ENV:', process.env.DB_HOST, process.env.DB_PORT);
     // connect to the database, if not connected throw an error
     dataSource = await connectDatabase(entities);
     if (!dataSource) {
