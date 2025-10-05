@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { Request, Response } from 'express';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @Controller('v1/api/user')
 export class UserController {
@@ -18,7 +19,7 @@ export class UserController {
 
   @Post()
   async create(
-    @Body() { email, password, plan },
+    @Body() createParams: CreateUserDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -26,7 +27,7 @@ export class UserController {
     const result = await this.userService.create(
       // createDifficultyLevelDto,
       // decoded,
-      { email, password, plan },
+      createParams,
     );
     return res.status(result.statusCode).send(result);
   }

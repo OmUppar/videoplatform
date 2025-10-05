@@ -2,13 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { dataSource } from 'src/main';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
 export class UserService {
   // constructor(private readonly dataSource: DataSource) {}  // 👈 Injected FOr Jest Testing
 
-  async create(userDto: any) {
-    const { email, password, plan } = userDto;
+  async create({ email, password, plan }: CreateUserDto) {
     const queryRunner = dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -25,6 +25,8 @@ export class UserService {
       createUser.email = email;
       createUser.password = password;
       createUser.plan = plan;
+      createUser.updatedBy = '687e39c5-b534-8006-b1b9-dafaa342b2de';
+      createUser.createdBy = '687e39c5-b534-8006-b1b9-dafaa342b2de';
 
       await queryRunner.manager.save<User>(createUser);
 

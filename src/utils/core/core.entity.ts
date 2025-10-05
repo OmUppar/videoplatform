@@ -24,11 +24,11 @@ export class CoreEntity {
   id!: string;
 
   @Index()
-  @Column('uuid', { default: '687e39c5-b534-8006-b1b9-dafaa342b2de' })
+  @Column('uuid')
   updatedBy!: string;
 
   @Index()
-  @Column('uuid', { default: '687e39c5-b534-8006-b1b9-dafaa342b2de' })
+  @Column('uuid')
   createdBy!: string;
 
   @Index()
