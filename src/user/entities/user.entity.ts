@@ -1,11 +1,9 @@
+import { CoreEntity } from 'src/utils/core/core.entity';
 // user.entity.ts
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity('users')
-export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class User extends CoreEntity {
   @Column()
   email: string;
 

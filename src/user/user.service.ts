@@ -1,29 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
-// import { dataSource } from 'src/main';
-// import { dataSource } from '../main';  // adjust path accordingly
 import { User } from './entities/user.entity';
-import { DataSource } from 'typeorm';
-import { CreateUserDto } from './dto/create-user.dto';
+import { dataSource } from 'src/main';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly dataSource: DataSource) {}  // 👈 Injected FOr Jest Testing
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
-
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
-  }
+  // constructor(private readonly dataSource: DataSource) {}  // 👈 Injected FOr Jest Testing
 
   async create(userDto: any) {
     const { email, password, plan } = userDto;
-    const queryRunner = this.dataSource.createQueryRunner();
+    const queryRunner = dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
@@ -48,7 +34,7 @@ export class UserService {
         ok: true,
         error: false,
         warn: false,
-        message: 'Difficulty Level Created Successfully',
+        message: 'User Created Successfully',
         statusCode: 201,
         errorData: null,
         data: {},
@@ -62,9 +48,9 @@ export class UserService {
       // const errorData: any = {};
 
       // if (error && error.code === PG_UNIQUE_VIOLATION) {
-      //   message = 'Difficulty Level already exists.';
+      //   message = 'User already exists.';
       //   code = 'ALREADY_EXISTS';
-      //   errorData.difficultyLevel = 'Difficulty Level already exists.';
+      //   errorData.difficultyLevel = 'User already exists.';
       //   try {
       //     const checkDifficultyLevel = await checkIfDataExists(
       //       `${SCHEMA.PLATFORM}.difficulty_level`,
@@ -95,7 +81,7 @@ export class UserService {
 
   async findAll() {
     try {
-      const result = await this.dataSource.manager
+      const result = await dataSource.manager
         .createQueryBuilder(User, 'u')
         // .leftJoinAndMapOne(
         //   'u.user_created',

@@ -5,6 +5,7 @@ import { entities } from './seeds/entities/seed.entity';
 import { DataSource } from 'typeorm';
 import * as dotenv from 'dotenv';
 import { NestFactory } from '@nestjs/core';
+import { setupSwagger } from './utils/swagger/setup.swagger';
 
 /**
  * Variable to store database connection
@@ -28,6 +29,18 @@ async function bootstrap(): Promise<void> {
     app = await NestFactory.create<NestExpressApplication>(AppModule, {
       abortOnError: true,
     });
+
+    await setupSwagger(
+      app,
+      (process.env.SWAGGER_API_TITLE as string) || 'First',
+      (process.env.SWAGGER_API_DESCRIPTION as string) || 'First',
+      (process.env.SWAGGER_SERVER_URL as string) || 'First',
+      (process.env.SWAGGER_API_VERSION as string) || 'First',
+      (process.env.SWAGGER_IMAGE_URL as string) || 'First',
+      (process.env.SWAGGER_TOP_BAR_COLOR as string) || 'First',
+      (process.env.SWAGGER_BACKGROUND_COLOR as string) || 'First',
+      (process.env.SWAGGER_CUSTOM_TITLE as string) || 'First',
+    );
 
     // listen to the port defined in .env file or 3000
     await app.listen(process.env.PORT || 3000);
