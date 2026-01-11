@@ -6,6 +6,7 @@ import { Otp } from './entities/otp.entity';
 import { InitializeAccountDto } from './dto/initialize-account.dto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { ConfirmLoginDto } from './dto/confirm-login.dto';
+import { sendOtpMail } from 'src/utils/mail/nodemailer.util';
 
 @Injectable()
 export class AuthenticationService {
@@ -14,19 +15,18 @@ export class AuthenticationService {
 
   constructor(private readonly jwtService: JwtService) {}
 
-  // 🔐 Generate 6-digit OTP
+  // 🔐 Generate OTP
   private generateOtp(): string {
     return Math.floor(100000 + Math.random() * 900000).toString();
   }
 
-  // 1️⃣ Send OTP
+  // 1️⃣ Initialize Account
   async initializeAccount(dto: InitializeAccountDto) {
     const otp = this.generateOtp();
 
     const expiresAt = new Date();
     expiresAt.setMinutes(expiresAt.getMinutes() + 5);
 
-    // Optional: delete old OTPs
     await this.otpRepo.delete({ email: dto.email });
 
     await this.otpRepo.save({
@@ -37,11 +37,14 @@ export class AuthenticationService {
       updatedBy: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
     });
 
-    // TODO: send via email / SMS
-    console.log('OTP:', otp);
+    console.log('MAIL HOST:', process.env.MAIL_HOST);
+    console.log('MAIL PORT:', process.env.MAIL_PORT);
+
+    // ✅ SEND MAIL
+    await sendOtpMail(dto.email, otp);
 
     return {
-      message: 'OTP sent successfully',
+      message: 'OTP sent to your email',
     };
   }
 
@@ -62,7 +65,6 @@ export class AuthenticationService {
       throw new BadRequestException('OTP expired');
     }
 
-    // ✅ OTP verified → delete it (one-time use)
     await this.otpRepo.delete({ id: record.id });
 
     return {
@@ -70,7 +72,7 @@ export class AuthenticationService {
     };
   }
 
-  // 3️⃣ Login & JWT
+  // 3️⃣ Confirm Login (JWT)
   async confirmLogin(dto: ConfirmLoginDto) {
     let user = await this.userRepo.findOne({
       where: { email: dto.email },
@@ -86,11 +88,16 @@ export class AuthenticationService {
     }
 
     const payload = {
-      userId: user.id,
+      sub: user.id,
       email: user.email,
     };
 
-    const accessToken = this.jwtService.sign(payload);
+    const accessToken = this.jwtService.sign(payload, {
+      // secret: process.env.JWT_SECRET as string,
+      secret: 'mysecret',
+      // expiresIn: process.env.JWT_EXPIRES_IN as string,
+      expiresIn: '1d',
+    });
 
     return {
       accessToken,

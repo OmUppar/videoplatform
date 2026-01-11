@@ -1,24 +1,22 @@
-# -------- Base image --------
-    FROM node:20-alpine
+FROM node:18-alpine
 
-    # -------- App directory --------
-    WORKDIR /app
-    
-    # -------- Copy package files --------
-    COPY package*.json ./
-    
-    # -------- Install dependencies --------
-    RUN npm install
-    
-    # -------- Copy source code --------
-    COPY . .
-    
-    # -------- Build NestJS --------
-    RUN npm run build
-    
-    # -------- Expose port --------
-    EXPOSE 3000
-    
-    # -------- Start app --------
-    CMD ["node", "dist/main.js"]
-    
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install --legacy-peer-deps
+
+COPY . .
+
+# 🔥 REQUIRED for Gmail SMTP
+RUN apk add --no-cache \
+    bash \
+    tzdata \
+    ca-certificates \
+    openssl
+
+ENV TZ=UTC
+RUN cp /usr/share/zoneinfo/UTC /etc/localtime && echo "UTC" > /etc/timezone
+
+EXPOSE 3000
+
+CMD ["npm", "run", "start:dev"]
