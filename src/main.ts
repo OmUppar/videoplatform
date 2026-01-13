@@ -6,6 +6,7 @@ import { DataSource } from 'typeorm';
 import * as dotenv from 'dotenv';
 import { NestFactory } from '@nestjs/core';
 import { setupSwagger } from './utils/swagger/setup.swagger';
+import { BadRequestException } from '@nestjs/common';
 
 /**
  * Variable to store database connection
@@ -41,6 +42,26 @@ async function bootstrap(): Promise<void> {
       (process.env.SWAGGER_BACKGROUND_COLOR as string) || 'First',
       (process.env.SWAGGER_CUSTOM_TITLE as string) || 'First',
     );
+
+    const whitelist = [
+      'http://localhost:3000', // React dev server (adjust port if needed)
+      'http://localhost:3001', // optional if React runs on 3001
+      'https://omupar.github.io/video-platform-UI', // your deployed frontend
+    ];
+
+    app.enableCors({
+      origin: (origin, callback) => {
+        // allow requests with no origin (e.g., Postman, server-to-server)
+        if (!origin || whitelist.includes(origin)) {
+          callback(null, true);
+        } else {
+          callback(new BadRequestException('Not allowed by CORS'));
+        }
+      },
+      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+      allowedHeaders: 'Content-Type,Authorization',
+      credentials: true,
+    });
 
     // listen to the port defined in .env file or 3000
     await app.listen(process.env.PORT || 3000);
