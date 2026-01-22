@@ -46,7 +46,7 @@ async function bootstrap(): Promise<void> {
     const whitelist = [
       'http://localhost:3000', // React dev server (adjust port if needed)
       'http://localhost:3001', // optional if React runs on 3001
-      'https://omupar.github.io/video-platform-UI', // your deployed frontend
+      'https://omuppar.github.io/video-platform-UI', // your deployed frontend
     ];
 
     app.enableCors({
