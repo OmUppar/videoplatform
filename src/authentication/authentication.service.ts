@@ -41,7 +41,9 @@ export class AuthenticationService {
     console.log('MAIL PORT:', process.env.MAIL_PORT);
 
     // ✅ SEND MAIL
+    console.log(`Sending OTP ${otp} to email ${dto.email}`);
     await sendOtpMail(dto.email, otp);
+    console.log(`Sent OTP ${otp} to email ${dto.email}`);
 
     return {
       message: 'OTP sent to your email',
