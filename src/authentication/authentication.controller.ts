@@ -20,23 +20,23 @@ export class AuthenticationController {
   constructor(private readonly service: AuthenticationService) {}
 
   @Post('initialize-account')
-  initialize(@Body() dto: InitializeAccountDto) {
+  async initialize(@Body() dto: InitializeAccountDto) {
     return this.service.initializeAccount(dto);
   }
 
   @Post('verify-otp')
-  verify(@Body() dto: VerifyOtpDto) {
+  async verify(@Body() dto: VerifyOtpDto) {
     return this.service.verifyOtp(dto);
   }
 
   @Post('confirm-login')
-  confirm(@Body() dto: ConfirmLoginDto) {
+  async confirm(@Body() dto: ConfirmLoginDto) {
     return this.service.confirmLogin(dto);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
-  getProfile(@Req() req: any) {
+  async getProfile(@Req() req: any) {
     return req.user;
   }
 }
