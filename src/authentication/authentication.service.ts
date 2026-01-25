@@ -82,7 +82,9 @@ export class AuthenticationService {
 
     // Send OTP email
     try {
+      console.log(`Sending OTP ${otp} to email ${dto.email}`);
       await sendOtpMail(dto.email, otp);
+      console.log(`Sent OTP ${otp} to email ${dto.email}`);
     } catch (error) {
       console.error('OTP mail failed:', error);
       throw new InternalServerErrorException('Failed to send OTP');
