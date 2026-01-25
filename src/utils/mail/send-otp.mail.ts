@@ -46,7 +46,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export async function sendOtpMail(email: string, otp: string) {
   console.log('RESEND_API_KEY:', process.env.RESEND_API_KEY);
   await resend.emails.send({
-    from: process.env.MAIL_FROM || 'OTP <onboarding@resend.dev>',
+    from: 'Video Platform <onboarding@resend.dev>',
     to: email,
     subject: 'Your OTP Code',
     text: `Your OTP is ${otp}. This OTP is valid for 5 minutes.`,
