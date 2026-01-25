@@ -42,7 +42,13 @@ export class AuthenticationService {
 
     // ✅ SEND MAIL
     console.log(`Sending OTP ${otp} to email ${dto.email}`);
+    // await sendOtpMail(dto.email, otp);
+    try {
     await sendOtpMail(dto.email, otp);
+    } catch (err) {
+      console.error('Mail failed', err.message);
+    }
+
     console.log(`Sent OTP ${otp} to email ${dto.email}`);
 
     return {
