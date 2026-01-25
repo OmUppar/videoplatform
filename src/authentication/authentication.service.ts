@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { dataSource } from 'src/main';
 import { Users } from './entities/user.entity';
@@ -6,7 +6,7 @@ import { Otp } from './entities/otp.entity';
 import { InitializeAccountDto } from './dto/initialize-account.dto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { ConfirmLoginDto } from './dto/confirm-login.dto';
-import { sendOtpMail } from 'src/utils/mail/nodemailer.util';
+import { sendOtpMail } from 'src/utils/mail/send-otp.mail';
 
 @Injectable()
 export class AuthenticationService {
@@ -15,7 +15,48 @@ export class AuthenticationService {
 
   constructor(private readonly jwtService: JwtService) {}
 
-  // 🔐 Generate OTP
+  // // 🔐 Generate OTP
+  // private generateOtp(): string {
+  //   return Math.floor(100000 + Math.random() * 900000).toString();
+  // }
+
+  // // 1️⃣ Initialize Account
+  // async initializeAccount(dto: InitializeAccountDto) {
+  //   const otp = this.generateOtp();
+
+  //   const expiresAt = new Date();
+  //   expiresAt.setMinutes(expiresAt.getMinutes() + 5);
+
+  //   await this.otpRepo.delete({ email: dto.email });
+
+  //   await this.otpRepo.save({
+  //     email: dto.email,
+  //     otp,
+  //     expiresAt,
+  //     createdBy: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+  //     updatedBy: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+  //   });
+
+  //   console.log('MAIL HOST:', process.env.MAIL_HOST);
+  //   console.log('MAIL PORT:', process.env.MAIL_PORT);
+
+  //   // ✅ SEND MAIL
+  //   console.log(`Sending OTP ${otp} to email ${dto.email}`);
+  //   // await sendOtpMail(dto.email, otp);
+  //   try {
+  //   await sendOtpMail(dto.email, otp);
+  //   } catch (err) {
+  //     console.error('Mail failed', err.message);
+  //   }
+
+  //   console.log(`Sent OTP ${otp} to email ${dto.email}`);
+
+  //   return {
+  //     message: 'OTP sent to your email',
+  //   };
+  // }
+
+    // 🔐 Generate OTP
   private generateOtp(): string {
     return Math.floor(100000 + Math.random() * 900000).toString();
   }
@@ -27,8 +68,10 @@ export class AuthenticationService {
     const expiresAt = new Date();
     expiresAt.setMinutes(expiresAt.getMinutes() + 5);
 
+    // Remove old OTP
     await this.otpRepo.delete({ email: dto.email });
 
+    // Save new OTP
     await this.otpRepo.save({
       email: dto.email,
       otp,
@@ -37,19 +80,13 @@ export class AuthenticationService {
       updatedBy: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
     });
 
-    console.log('MAIL HOST:', process.env.MAIL_HOST);
-    console.log('MAIL PORT:', process.env.MAIL_PORT);
-
-    // ✅ SEND MAIL
-    console.log(`Sending OTP ${otp} to email ${dto.email}`);
-    // await sendOtpMail(dto.email, otp);
+    // Send OTP email
     try {
-    await sendOtpMail(dto.email, otp);
-    } catch (err) {
-      console.error('Mail failed', err.message);
+      await sendOtpMail(dto.email, otp);
+    } catch (error) {
+      console.error('OTP mail failed:', error);
+      throw new InternalServerErrorException('Failed to send OTP');
     }
-
-    console.log(`Sent OTP ${otp} to email ${dto.email}`);
 
     return {
       message: 'OTP sent to your email',
