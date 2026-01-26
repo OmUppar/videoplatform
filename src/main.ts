@@ -63,11 +63,6 @@ async function bootstrap(): Promise<void> {
       credentials: true,
     });
 
-    app.useStaticAssets('uploads', {
-      prefix: '/uploads',
-    });
-
-
     // listen to the port defined in .env file or 3000
     await app.listen(process.env.PORT || 3000);
   } catch (error) {

@@ -4,10 +4,9 @@ import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { SeedsModule } from './seeds/seeds.module';
 import { AuthenticationModule } from './authentication/authentication.module';
-import { VideoModule } from './video/video.module';
 
 @Module({
-  imports: [UserModule, SeedsModule, AuthenticationModule, VideoModule],
+  imports: [UserModule, SeedsModule, AuthenticationModule],
   controllers: [AppController],
   providers: [AppService],
 })
